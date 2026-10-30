@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Plugin template",
+    "description": "A minimal DSH plugin with a host HTTP route, a settings page, two locales and tests. Plain JS, no build."
+  }
+}

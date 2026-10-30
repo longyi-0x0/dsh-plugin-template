@@ -1,0 +1,7 @@
+# 把插件挂进 DSH 的配置树：一行宿主入口，浏览器半区由 package.json 的 dsh.client 声明自动带来。
+#
+# name 必须等于安装后的包名（package.json 的 name）。改包名时这里同步改，
+# 否则表现为「装上了，但设置页里不出现」。
+- insert:
+    - id: plugin-template
+      name: 'dsh-plugin-template'

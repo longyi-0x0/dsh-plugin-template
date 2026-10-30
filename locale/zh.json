@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "插件模板",
+    "description": "宿主 HTTP 路由 + 设置页 + 双语 + 测试的最小 DSH 插件，纯 JS 无构建。"
+  }
+}
