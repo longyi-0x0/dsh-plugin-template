@@ -1,6 +1,13 @@
 {
   "meta": {
     "title": "插件模板",
-    "description": "宿主 HTTP 路由 + 设置页 + 双语 + 测试的最小 DSH 插件，纯 JS 无构建。"
+    "description": "TypeScript + React TSX 的 DSH 插件骨架：空设置页、双语、esbuild 构建与测试，不含业务逻辑。"
+  },
+  "ui": {
+    "nav": "插件模板",
+    "title": "插件模板",
+    "subtitle": "空设置页：只演示插槽注册、双语和构建，不含业务接口。",
+    "close": "返回",
+    "hint": "这是插件模板的骨架：在 src/host 和 src/client 里加你的业务与界面。"
   }
 }

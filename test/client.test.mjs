@@ -1,10 +1,9 @@
-import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { expect, test } from 'vitest'
 
 /**
- * 浏览器半区的装载冒烟：用最小的 window 接住 __ModuleLoader__.load，
- * 再用假的 ctx 跑一遍 apply，确认字典与设置页都登记上了。
- * 组件本身不渲染（渲染需要 DSH 的 React 与主题环境），只验证接线。
+ * Smoke test for the built browser bundle: capture __ModuleLoader__.load with a
+ * minimal window, then run the plugin apply against a fake Client context.
+ * The component is not rendered; this verifies registration wiring only.
  */
 
 let captured = null
@@ -18,8 +17,8 @@ async function loadModule() {
       },
     },
   }
-  await import(new URL('../lib/client.js', import.meta.url).href)
-  assert.ok(captured !== null, '模块没有调用 __ModuleLoader__.load')
+  await import(new URL('../target/client.js', import.meta.url).href)
+  expect(captured).not.toBe(null)
   return captured
 }
 
@@ -31,10 +30,19 @@ function reactStub() {
   }
 }
 
-/** 宿主注入的 require：模板只向它要 React。 */
+function jsxRuntimeStub() {
+  return {
+    Fragment: Symbol('Fragment'),
+    jsx: () => null,
+    jsxs: () => null,
+  }
+}
+
+/** The Host-injected require: this template asks for React and its JSX runtime. */
 function requireStub(name) {
-  assert.equal(name, 'react')
-  return reactStub()
+  if (name === 'react') return reactStub()
+  if (name === 'react/jsx-runtime' || name === 'react/jsx-dev-runtime') return jsxRuntimeStub()
+  throw new Error(`unexpected require: ${name}`)
 }
 
 function fakeContext() {
@@ -67,33 +75,33 @@ function fakeContext() {
   }
 }
 
-test('模块声明自己的 id 与 factory', async () => {
+test('module declares its own id and factory', async () => {
   const spec = await loadModule()
-  assert.equal(spec.id, 'dsh-plugin-template')
-  assert.equal(typeof spec.factory, 'function')
+  expect(spec.id).toBe('dsh-plugin-template')
+  expect(typeof spec.factory).toBe('function')
 })
 
-test('factory 返回 cordis 插件形状', async () => {
+test('factory returns the Cordis plugin shape', async () => {
   const spec = await loadModule()
   const plugin = spec.factory(requireStub)
-  assert.deepEqual(plugin.inject, ['slots', 'locale'])
-  assert.equal(typeof plugin.apply, 'function')
+  expect(plugin.inject).toEqual(['slots', 'locale'])
+  expect(typeof plugin.apply).toBe('function')
 })
 
-test('apply 注册中英字典与一个设置页', async () => {
+test('apply registers both dictionaries and one settings section', async () => {
   const spec = await loadModule()
   const plugin = spec.factory(requireStub)
   const { ctx, registrations, dictionaries } = fakeContext()
   plugin.apply(ctx)
 
-  assert.equal(dictionaries.length, 1)
-  assert.equal(dictionaries[0].namespace, 'pluginTemplate')
-  assert.deepEqual(Object.keys(dictionaries[0].dicts), ['zh', 'en'])
+  expect(dictionaries).toHaveLength(1)
+  expect(dictionaries[0].namespace).toBe('pluginTemplate')
+  expect(Object.keys(dictionaries[0].dicts)).toEqual(['zh', 'en'])
 
-  assert.equal(registrations.length, 1)
+  expect(registrations).toHaveLength(1)
   const [entry] = registrations
-  assert.equal(entry.options.name, 'settings.section')
-  assert.equal(entry.options.id, 'plugin-template')
-  assert.equal(entry.options.label(), 'nav')
-  assert.equal(typeof entry.component, 'function')
+  expect(entry.options.name).toBe('settings.section')
+  expect(entry.options.id).toBe('plugin-template')
+  expect(entry.options.label()).toBe('nav')
+  expect(typeof entry.component).toBe('function')
 })

@@ -2,32 +2,35 @@
   "name": "dsh-plugin-template",
   "version": "0.1.0",
   "private": true,
-  "description": "DSH 插件模板：宿主 HTTP 路由 + 设置页 + 双语 + 测试，纯 JS 无构建。",
+  "description": "DSH 插件模板：TypeScript + React TSX 的空插件骨架，含双语设置页、esbuild 构建与 vitest 测试。",
   "license": "MIT",
   "type": "module",
-  "main": "lib/index.js",
+  "main": "./target/index.js",
   "icon": "icon.svg",
   "exports": {
-    ".": "./lib/index.js",
-    "./client": "./lib/client.js",
+    ".": "./target/index.js",
+    "./client": "./target/client.js",
     "./locale/*.json": "./locale/*.json",
     "./icon": "./icon.svg",
     "./cordis.patch.yml": "./cordis.patch.yml",
     "./package.json": "./package.json"
   },
   "files": [
-    "lib/index.js",
-    "lib/client.js",
-    "lib/routes.js",
-    "lib/service.js",
+    "target/index.js",
+    "target/client.js",
     "cordis.patch.yml",
     "locale/*.json",
     "icon.svg",
     "README.md"
   ],
   "scripts": {
-    "test": "node --test",
-    "check": "node --check lib/index.js && node --check lib/client.js && node --check lib/routes.js && node --check lib/service.js"
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/build.mjs --watch",
+    "typecheck": "tsc -p tsconfig.host.json && tsc -p tsconfig.client.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build:check": "node scripts/build.mjs --check",
+    "check": "npm run build:check && npm run typecheck && npm run test"
   },
   "engines": {
     "node": ">=20"
@@ -35,7 +38,9 @@
   "keywords": [
     "dsh",
     "dsh-plugin",
-    "deepseek-harness"
+    "deepseek-harness",
+    "typescript",
+    "react"
   ],
   "dsh": {
     "manifestVersion": 1,
@@ -49,5 +54,12 @@
         "@deepseek-ai/dsh-client-ui-settings"
       ]
     }
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "@types/react": "^18.3.31",
+    "esbuild": "^0.28.2",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.12"
   }
 }

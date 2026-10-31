@@ -1,6 +1,13 @@
 {
   "meta": {
     "title": "Plugin template",
-    "description": "A minimal DSH plugin with a host HTTP route, a settings page, two locales and tests. Plain JS, no build."
+    "description": "A TypeScript + React TSX DSH plugin skeleton with an empty settings page, locales, esbuild build and tests; no business logic."
+  },
+  "ui": {
+    "nav": "Plugin template",
+    "title": "Plugin template",
+    "subtitle": "An empty settings page: it only demonstrates slot registration, locales and the build, with no business API.",
+    "close": "Back",
+    "hint": "This is the plugin skeleton: add your host logic and UI in src/host and src/client."
   }
 }
